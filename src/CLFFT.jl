@@ -107,7 +107,7 @@ function Plan{T<:clfftNumber}(::Type{T}, ctx::cl.Context, sz::Dims)
     end
     ph = PlanHandle[0]
     err = api.clfftCreateDefaultPlan(ph, ctx.id,
-                                     int32(ndim), lengths)
+                                     Int32(ndim), lengths)
     if err != api.CLFFT_SUCCESS
         if ph[1] != 0
             @check api.clfftDestroyPlan(ph)
@@ -157,7 +157,7 @@ function Plan{T<:clfftNumber}(::Type{T}, ctx::cl.Context,
         end
     end
     ph = PlanHandle[0]
-    err = api.clfftCreateDefaultPlan(ph, ctx.id, int32(ndim), lengths)
+    err = api.clfftCreateDefaultPlan(ph, ctx.id, Int32(ndim), lengths)
     if err != api.CLFFT_SUCCESS
         if ph[1] != 0
             @check api.clfftDestroyPlan(ph)
@@ -297,9 +297,9 @@ scaling_factor(p::Plan, dir::Symbol) = begin
     res = Cint[0]
     d::Cint
     if dir == :forward
-        d = int32(-1)
+        d = Int32(-1)
     elseif dir == :backward
-        d = int32(1)
+        d = Int32(1)
     else
         error("undefined")
     end
@@ -311,9 +311,9 @@ end
 
 set_scaling_factor!(p::Plan, dir::Symbol, f::AbstractFloat) = begin
     if dir == :forward
-        d = int32(-1)
+        d = Int32(-1)
     elseif d == :backward
-        d = int32(1)
+        d = Int32(1)
     else
         error("undefined")
     end
@@ -358,7 +358,7 @@ set_lengths!(p::Plan, dims::Dims) = begin
     for (i, d) in enumerate(dims)
         nd[i] = d
     end
-    @check api.clfftSetPlanLength(p.id[1], int32(ndim), nd)
+    @check api.clfftSetPlanLength(p.id[1], Int32(ndim), nd)
     return p
 end
 
@@ -366,7 +366,7 @@ end
 lengths(p::Plan) = begin
     d = dim(p)
     res = Array(Csize_t, d)
-    @check api.clfftGetPlanLength(p.id[1], int32(d), res)
+    @check api.clfftGetPlanLength(p.id[1], Int32(d), res)
     return Int(res)
 end
 
@@ -374,7 +374,7 @@ end
 instride(p::Plan) = begin
     d = dim(p)
     res = Array(Csize_t, d)
-    @check api.clfftGetPlanInStride(p.id[1], int32(d), res)
+    @check api.clfftGetPlanInStride(p.id[1], Int32(d), res)
     return Int(res)
 end
 
@@ -383,7 +383,7 @@ set_instride!(p::Plan, instrides) = begin
     d = length(instrides)
     @assert d == dim(p)
     strides = Csize_t[Int(s) for s in instrides]
-    @check api.clfftSetPlanInStride(p.id[1], int32(d), strides)
+    @check api.clfftSetPlanInStride(p.id[1], Int32(d), strides)
     return p
 end
 
@@ -391,7 +391,7 @@ end
 outstride(p::Plan) = begin
     d = dim(p)
     res = Array(Csize_t, d)
-    @check api.clfftGetPlanOutStride(p.id[1], int32(d), res)
+    @check api.clfftGetPlanOutStride(p.id[1], Int32(d), res)
     return Int(res)
 end
 
@@ -400,7 +400,7 @@ set_outstride!(p::Plan, outstrides) = begin
     d = length(outstrides)
     @assert d == dim(p)
     strides = Csize_t[Int(s) for s in outstrides]
-    @check api.clfftSetPlanInStride(p.id[1], int32(d), strides)
+    @check api.clfftSetPlanInStride(p.id[1], Int32(d), strides)
     return p
 end
 
@@ -502,7 +502,7 @@ function enqueue_transform{T<:clfftNumber}(p::Plan,
                               dir == :forward ? api.CLFFT_FORWARD : api.CLFFT_BACKWARD,
                               UInt32(nqueues),
                               q_ids,
-                              uint32(nevts),
+                              uInt32(nevts),
                               evt_ids,
                               out_evts,
                               in_buff_ids,
